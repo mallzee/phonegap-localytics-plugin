@@ -17,6 +17,8 @@ In your index.html, modify your \<body\> tag:
 
 Also in your index.html, add the following \<script\> block:
 
+*Note*: replace \<YOUR_APP_KEY\> with your Localytics app key
+
 	<script type="text/javascript">
         function onLoad() {
             document.addEventListener("deviceready", onDeviceReady, false);
