@@ -27,7 +27,7 @@ Also in your index.html, add the following \<script\> block:
         }
         function onDeviceReady() {
             Localytics.init("<YOUR_APP_KEY>");
-            Localytics.resume();                
+            Localytics.resume();
             Localytics.upload();
         }
         function onResume() {
@@ -39,12 +39,12 @@ Also in your index.html, add the following \<script\> block:
             Localytics.upload();
         }
     </script>
-    
+
 ### Option 2: Platform specific (analytics + marketing)
 
 #### iOS
 
-At the top of your app delegate, add the following import: 
+At the top of your app delegate, add the following import:
 
 	import "LocalyticsAmpSession.h"
 
@@ -53,11 +53,11 @@ In your app delegate's implementation, add the following code:
 	- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 	{
 		// ... existing code ...
-	
+
 		[[LocalyticsAmpSession shared] LocalyticsSession:@"<YOUR_APP_KEY>"];
-	    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];	   
+	    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
 		[LocalyticsAmpSession shared] handleRemoteNotification:launchOptions]];
-	   
+
 	    return YES;
 	}
 
@@ -66,62 +66,62 @@ In your app delegate's implementation, add the following code:
 		[[LocalyticsAmpSession shared] resume];
 		[[LocalyticsAmpSession shared] upload];
 	}
-	
-	- (void)applicationDidEnterBackground:(UIApplication *)application 
+
+	- (void)applicationDidEnterBackground:(UIApplication *)application
 	{
 		[[LocalyticsAmpSession shared] close];
 		[[LocalyticsAmpSession shared] upload];
 	}
-	
-	- (void)applicationWillEnterForeground:(UIApplication *)application 
+
+	- (void)applicationWillEnterForeground:(UIApplication *)application
 	{
 		[[LocalyticsAmpSession shared] resume];
 		[[LocalyticsAmpSession shared] upload];
 	}
 
-	- (void)applicationWillTerminate:(UIApplication *)application 
+	- (void)applicationWillTerminate:(UIApplication *)application
 	{
 		[[LocalyticsAmpSession shared] close];
 		[[LocalyticsAmpSession shared] upload];
 	}
-	
+
 	- (void)applicationWillResignActive:(UIApplication *)application
 	{
 		[[LocalyticsAmpSession shared] close];
 		[[LocalyticsAmpSession shared] upload];
 	}
-	
+
 	- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 	{
 		[[LocalyticsAmpSession shared] setPushToken:deviceToken];
 	}
-	 
+
 	- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 	{
 		NSLog(@"Failed to register for remote notifications: %@", [error description]);
 	}
-	 
+
 	- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 	{
 		[[LocalyticsAmpSession shared] handleRemoteNotification:userInfo];
 	}
-	
+
 #### Android
 
 In your AndroidManifest.xml, add the following before your \<application\> tag:
 
 *Note*: replace YOUR.PACKAGE.NAME with your package name, ie, com.yourcompany.yourapp
-	
+
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
-	<uses-permission android:name="android.permission.WAKE_LOCK" />   
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
 	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-	  
+
 	<permission android:name="YOUR.PACKAGE.NAME.permission.C2D_MESSAGE"
 	    android:protectionLevel="signature" />
 	<uses-permission android:name="YOUR.PACKAGE.NAME.permission.C2D_MESSAGE" />
-	
-Inside your \<application\> tag, add: 
+
+Inside your \<application\> tag, add:
 
 *Note*: replace \<YOUR_APP_KEY\> with your Localytics app key and YOUR.PACKAGE.NAME with your package name
 
@@ -130,21 +130,21 @@ Inside your \<application\> tag, add:
 	    android:permission="com.google.android.c2dm.permission.SEND" >
 	    <intent-filter>
 	        <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-	        <action android:name="com.google.android.c2dm.intent.RECEIVE" />               
+	        <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 	        <category android:name="YOUR.PACKAGE.NAME" />
 	    </intent-filter>
 	</receiver>
-	
+
 	<meta-data android:name="LOCALYTICS_APP_KEY" android:value="<YOUR_APP_KEY>" />
-	
-At the top of your main activity, add the following import: 
+
+At the top of your main activity, add the following import:
 
 	import com.localytics.android.*;
-	
+
 Add the session object as a private member variable inside your activity class:
 
 	private LocalyticsAmpSession localyticsSession;
-	
+
 Inside your activity class, add or modify the following methods:
 
 *Note*: replace \<YOUR_PROJECT_NUMBER\> with your GCM project number
@@ -153,14 +153,14 @@ Inside your activity class, add or modify the following methods:
 	public void onCreate(Bundle savedInstanceState)
 	{
 		// ... existing code ...
-	 
+
 		this.localyticsSession = new LocalyticsSession(this.getApplicationContext());
-		this.localyticsSession.registerPush("<YOUR_PROJECT_NUMBER>");       
+		this.localyticsSession.registerPush("<YOUR_PROJECT_NUMBER>");
 		this.localyticsSession.open();
 		this.localyticsSession.handlePushReceived(getIntent());
 		this.localyticsSession.upload();
 	}
-	
+
 	@Override
 	public void onResume()
 	{
@@ -168,8 +168,8 @@ Inside your activity class, add or modify the following methods:
 	    this.localyticsSession.open();
 	    this.localyticsSession.handlePushReceived(getIntent());
 	    this.localyticsSession.upload();
-	}	
-	
+	}
+
 	@Override
 	public void onPause()
 	{
@@ -177,17 +177,17 @@ Inside your activity class, add or modify the following methods:
 	    this.localyticsSession.upload();
 	    super.onPause();
 	}
-	
+
 	@Override
 	protected void onNewIntent(Intent intent)
 	{
 	    super.onNewIntent(intent);
 	    setIntent(intent);
-	} 	
+	}
 
 ## Instrumentation
 
-Regardless of the integration option you chose, all instrumentation should be done inside the web app. 
+Regardless of the integration option you chose, all instrumentation should be done inside the web app.
 
 ### Event tagging
 
@@ -199,6 +199,28 @@ For some events, it may be interesting to collect additional data about the even
 
 	Localytics.tagEvent("Options Saved", { "Display Units" : "MPH", "Age Range" : "18-25" },  0);
 
-The third parameter of tagEvent is used to increase customer lifetime value. If the user makes a purchase, you might specify the price of the purchase in cents: 
+The third parameter of tagEvent is used to increase customer lifetime value. If the user makes a purchase, you might specify the price of the purchase in cents:
 
 	Localytics.tagEvent("Purchase Completed", { "Item Name" : "Power Up" }, 499);
+
+### Customer Details
+
+You can track basic information about your customers. This is useful when you want to export data via the API and for use with the new Profiles section. [Click here for more info](http://support.localytics.com/IOS#User_ID_and_Email_Tracking)
+
+    Localytics.setCustomerId(id);
+    Localytics.setCustomerName(name);
+    Localytics.setCustomerEmail(email);
+
+### Custom Dimensions
+
+You can set a global custom dimension on all of your localytics events. This is useful to track a global property across the full app. [Click here for more info](http://support.localytics.com/IOS#Custom_Dimensions)
+
+    Localytics.setCustomDimension(dimension, value);
+
+### Profile Attributes
+
+Localytics now supports profiles. You can start to tag attributes about your customers based on their customer id. See here for more information about profiles. [Localytics Profiles](http://support.localytics.com/IOS#Profile_Attributes)
+
+    Localytics.setProfileValue(attribute, value);
+
+

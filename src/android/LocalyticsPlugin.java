@@ -78,7 +78,7 @@ public class LocalyticsPlugin extends CordovaPlugin {
                     }
                     HashMap<String, String> a = null;
                     if (attributes != null && attributes.length() > 0) {
-                        a = new HashMap<String, String>();                    
+                        a = new HashMap<String, String>();
                         Iterator<?> keys = attributes.keys();
                         while (keys.hasNext()) {
                             String key = (String)keys.next();
@@ -91,7 +91,7 @@ public class LocalyticsPlugin extends CordovaPlugin {
                     callbackContext.success();
                 } else {
                     callbackContext.error("Expected non-empty name argument.");
-                }                            
+                }
             } else {
                 callbackContext.error("Expected three arguments.");
             }
@@ -110,7 +110,7 @@ public class LocalyticsPlugin extends CordovaPlugin {
                 int index = args.getInt(0);
                 String value = null;
                 if (!args.isNull(1)) {
-                    value = args.getString(1);   
+                    value = args.getString(1);
                 }
                 this.localyticsSession.setCustomDimension(index, value);
                 callbackContext.success();
@@ -124,10 +124,10 @@ public class LocalyticsPlugin extends CordovaPlugin {
                 if (name != null && name.length() > 0) {
                     String value = null;
                     if (!args.isNull(1)) {
-                        value = args.getString(1);   
+                        value = args.getString(1);
                     }
                     this.localyticsSession.setCustomerData(name, value);
-                    callbackContext.success();                
+                    callbackContext.success();
                 } else {
                     callbackContext.error("Expected non-empty name argument.");
                 }
@@ -138,7 +138,7 @@ public class LocalyticsPlugin extends CordovaPlugin {
         } else if (action.equals("setCustomerId")) {
             String id = null;
             if (!args.isNull(0)) {
-                id = args.getString(0);   
+                id = args.getString(0);
             }
             this.localyticsSession.setCustomerId(id);
             callbackContext.success();
@@ -146,7 +146,7 @@ public class LocalyticsPlugin extends CordovaPlugin {
         } else if (action.equals("setCustomerName")) {
             String name = null;
             if (!args.isNull(0)) {
-                name = args.getString(0);   
+                name = args.getString(0);
             }
             this.localyticsSession.setCustomerName(name);
             callbackContext.success();
@@ -154,7 +154,7 @@ public class LocalyticsPlugin extends CordovaPlugin {
         } else if (action.equals("setCustomerEmail")) {
             String email = null;
             if (!args.isNull(0)) {
-                email = args.getString(0);   
+                email = args.getString(0);
             }
             this.localyticsSession.setCustomerEmail(email);
             callbackContext.success();

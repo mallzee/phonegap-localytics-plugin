@@ -13,7 +13,7 @@
 {
 	if (![[command.arguments objectAtIndex:0] isKindOfClass:[NSNull class]])
 	{
-		[[LocalyticsSession sharedLocalyticsSession] localyticsSession:[command.arguments objectAtIndex:0]];
+		[[LocalyticsSession sharedLocalyticsSession] LocalyticsSession:[command.arguments objectAtIndex:0]];
 	}
 }
 
@@ -85,7 +85,7 @@
 	{
 		value = [command.arguments objectAtIndex:1];
 	}
-	
+
 	if (name && [name isKindOfClass:[NSString class]] && name.length > 0)
 	{
 		[[LocalyticsSession sharedLocalyticsSession] setValueForIdentifier:name value:value];
@@ -99,7 +99,7 @@
 	{
 		cid = [command.arguments objectAtIndex:0];
 	}
-	
+
 	[[LocalyticsSession sharedLocalyticsSession] setCustomerId:cid];
 }
 
@@ -110,7 +110,7 @@
 	{
 		name = [command.arguments objectAtIndex:0];
 	}
-	
+
 	[[LocalyticsSession sharedLocalyticsSession] setCustomerName:name];
 }
 
@@ -121,14 +121,14 @@
 	{
 		email = [command.arguments objectAtIndex:0];
 	}
-	
+
 	[[LocalyticsSession sharedLocalyticsSession] setCustomerEmail:email];
 }
 
 - (void)setLoggingEnabled:(CDVInvokedUrlCommand *)command
 {
 	NSNumber *enabled = [command.arguments objectAtIndex:0];
-	
+
 	if (enabled && [enabled isKindOfClass:[NSNumber class]])
 	{
 		[[LocalyticsSession sharedLocalyticsSession] setLoggingEnabled:[enabled boolValue]];
@@ -138,7 +138,7 @@
 - (void)setHttpsEnabled:(CDVInvokedUrlCommand *)command
 {
 	NSNumber *enabled = [command.arguments objectAtIndex:0];
-	
+
 	if (enabled && [enabled isKindOfClass:[NSNumber class]])
 	{
 		[[LocalyticsSession sharedLocalyticsSession] setEnableHTTPS:[enabled boolValue]];
@@ -148,7 +148,7 @@
 - (void)setAdvertisingIdentifierEnabled:(CDVInvokedUrlCommand *)command
 {
 	NSNumber *enabled = [command.arguments objectAtIndex:0];
-	
+
 	if (enabled && [enabled isKindOfClass:[NSNumber class]])
 	{
 		[[LocalyticsSession sharedLocalyticsSession] setAdvertisingIdentifierEnabled:[enabled boolValue]];
@@ -158,11 +158,26 @@
 - (void)setSessionTimeout:(CDVInvokedUrlCommand *)command
 {
 	NSNumber *timeout = [command.arguments objectAtIndex:0];
-	
+
 	if (timeout && [timeout isKindOfClass:[NSNumber class]])
 	{
 		[[LocalyticsSession sharedLocalyticsSession] setSessionTimeoutInterval:[timeout floatValue]];
 	}
+}
+
+-(void)setProfileValue:(CDVInvokedUrlCommand *)command
+{
+    if (command.arguments.count == 2) {
+        @try {
+
+            return [[LocalyticsSession sharedLocalyticsSession]
+                    setProfileValue:[command.arguments objectAtIndex:1]
+                    forAttribute:[command.arguments objectAtIndex:0]];
+
+        } @catch (NSException *error) {
+            NSLog(@"Localytics profile error %@", error);
+        }
+    }
 }
 
 @end

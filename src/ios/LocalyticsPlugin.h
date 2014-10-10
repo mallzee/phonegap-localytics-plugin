@@ -23,5 +23,6 @@
 - (void)setHttpsEnabled:(CDVInvokedUrlCommand *)command;
 - (void)setAdvertisingIdentifierEnabled:(CDVInvokedUrlCommand *)command;
 - (void)setSessionTimeout:(CDVInvokedUrlCommand *)command;
+- (void)setProfileValue:(CDVInvokedUrlCommand *)command;
 
 @end

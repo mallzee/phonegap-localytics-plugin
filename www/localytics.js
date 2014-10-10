@@ -104,4 +104,11 @@ Localytics.prototype.setSessionTimeout = function (seconds) {
 	cordova.exec(null, null, "LocalyticsPlugin", "setSessionTimeout", [seconds]);
 }
 
+// Set a profile value for the current customer ID
+// attribute = string
+// value = array|string|date|int
+Localytics.prototype.setProfileValue = function (attribute, value) {
+	cordova.exec(null, null, "LocalyticsPlugin", "setProfileValue", [attribute, value]);
+}
+
 module.exports = new Localytics();

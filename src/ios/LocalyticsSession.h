@@ -10,7 +10,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
 
-#define CLIENT_VERSION              @"2.25.0"
+#define CLIENT_VERSION              @"2.71.0"
 #define MARKETING_PLATFORM
 
 /*!
@@ -22,7 +22,7 @@
  <li><a href="http://wiki.localytics.com/index.php?title=Developer's_Integration_Guide">
  Main Developer's Integration Guide</a></li>
  </ul>
- 
+
  <strong>Best Practices</strong>
  <ul>
  <li>Instantiate the LocalyticsSession object in applicationDidFinishLaunching.</li>
@@ -37,7 +37,7 @@
  <li>Do not use multiple LocalticsSession objects to upload data with
  multiple application keys.  This can cause invalid state.</li>
  </ul>
- 
+
  @author Localytics
  */
 
@@ -78,8 +78,10 @@
  @method integratePushNotifications
  @abstract Lets the Localytics SDK handle registering for and handling push notifications
  @param remoteNotificationType The types of notifications for which to register
+ @deprecated This method is deprecated. Use 'registerForRemoteNotificationTypes:' instead.
  */
-- (void)integratePushNotifications:(UIRemoteNotificationType)remoteNotificationType;
+- (void)integratePushNotifications:(UIRemoteNotificationType)remoteNotificationType  __attribute__((unavailable("'integratePushNotifications' has been deprecated. Use 'registerForRemoteNotificationTypes:' directly.")));
+
 //************************************************************************************************//
 
 
@@ -115,7 +117,7 @@
 
 /*!
  @property localyticsDelegate
- @abstract (Optional) Assign this delegate to the class you'd like to register to recieve 
+ @abstract (Optional) Assign this delegate to the class you'd like to register to recieve
  the Localytics delegate callbacks (Defined at the end of this file)
  */
 @property (nonatomic, assign) id<LocalyticsSessionDelegate> localyticsDelegate;
@@ -155,7 +157,7 @@
  <br>
  See the tagging guide at: http://wiki.localytics.com/
  @param event The name of the event which occurred.
- @param attributes (Optional) An object/hash/dictionary of key-value pairs, contains 
+ @param attributes (Optional) An object/hash/dictionary of key-value pairs, contains
  contextual data specific to the event.
  @param rerportAttributes (Optional) Additional attributes used for custom reporting.
  Available to Enterprise customers, please contact services for more details.
@@ -266,15 +268,27 @@ customerValueIncrease:(NSNumber *)customerValueIncrease;
 - (void)setLocation:(CLLocationCoordinate2D)deviceLocation;
 //************************************************************************************************//
 
+//************************************************************************************************//
+#pragma mark - Profile Methods
+/*!
+ @method setProfileValue:forAttribute:
+ @abstract Sets the value of a profile attribute.
+ @param value The value to set the profile attribute to. value can be one of the following: NSString,
+ NSNumber(long & int), NSDate, NSArray of Strings, NSArray of NSNumbers(long & int), NSArray of Date,
+ nil. Passing in a 'nil' value will result in that attribute being deleted from the profile
+ @param attribute The attribute is the name of the profile attribute
+ */
+- (void)setProfileValue:(NSObject<NSCopying> *)value forAttribute:(NSString *)attribute;
+//************************************************************************************************//
 
 //************************************************************************************************//
 #pragma mark - Advanced Integration Methods
 /*!
- @method localyticsSession
+ @method LocalyticsSession
  @abstract Initializes the Localytics Object.  Not necessary if you choose to use startSession.
  @param applicationKey The key unique for each application generated at www.localytics.com
  */
-- (void)localyticsSession:(NSString *)appKey;
+- (void)LocalyticsSession:(NSString *)appKey;
 
 /*!
  @method startSession
@@ -359,13 +373,17 @@ customerValueIncrease:(NSNumber *)customerValueIncrease;
  @method localyticsWillResumeSession
  @abstract Register for this callback to be notified when Localytics will resume
  a session. See the on the 'resume' method for additional details.
+ @param willResumeExistingSession This flag will indicate if Localytics restored an existing
+ session or started a new one.
  */
-- (void)localyticsWillResumeSession:(BOOL)didResumeExistingSession;
+- (void)localyticsWillResumeSession:(BOOL)willResumeExistingSession;
 
 /*!
  @method localyticsDidResumeSession
  @abstract Register for this callback to be notified when Localytics has resumed
  a session. See the on the 'resume' method for additional details.
+ @param didResumeExistingSession This flag will indicate if Localytics restored an existing
+ session or started a new one.
  */
 - (void)localyticsDidResumeSession:(BOOL)didResumeExistingSession;
 

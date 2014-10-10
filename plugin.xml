@@ -8,7 +8,7 @@
     <js-module src="www/Localytics.js" name="Localytics">
         <clobbers target="Localytics" />
     </js-module>
-    
+
     <engines>
         <engine name="cordova" version=">=3.0.0" />
     </engines>
