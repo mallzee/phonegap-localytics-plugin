@@ -13,7 +13,7 @@
         <engine name="cordova" version=">=3.0.0" />
     </engines>
 
-    <preference name="APP_KEY" />
+    <preference name="APP_ID" />
 
     <platform name="ios">
 

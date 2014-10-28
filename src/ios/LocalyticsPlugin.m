@@ -6,7 +6,7 @@
 
 #import "AppDelegate.h"
 #import "LocalyticsPlugin.h"
-#import "LocalyticsSession.h"
+#import "LocalyticsAmpSession.h"
 
 @implementation LocalyticsPlugin
 
@@ -15,12 +15,13 @@
     NSString *appId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"LocalyticsAppID"];
 
     if (appId) {
-        [[LocalyticsSession sharedLocalyticsSession] LocalyticsSession:appId];
+        [[LocalyticsAmpSession sharedLocalyticsSession] LocalyticsSession:appId];
     } else {
         NSLog(@"Localtyics warning: APP ID Missing. Must have 'LocalyticsAppID' key in your info.plist");
     }
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRegisterForRemoteNotificationsWithDeviceTokenObserver:)name:@"CDVRemoteNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRegisterForRemoteNotificationsWithDeviceTokenObserver:)name:CDVRemoteNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didFinishLaunchingWithOptionsObserver:)name:@"UIApplicationDidFinishLaunchingNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openURLObserver:)name:CDVPluginHandleOpenURLNotification object:nil];
 }
 
 + (void)didFinishLaunchingWithOptionsObserver:(NSNotification *)notification
@@ -29,43 +30,49 @@
     if ([[launchOptions allKeys]
          containsObject:UIApplicationLaunchOptionsRemoteNotificationKey])
     {
-        [[LocalyticsSession shared] resume];
-        [[LocalyticsSession shared] handleRemoteNotification:[launchOptions
+        [[LocalyticsAmpSession shared] resume];
+        [[LocalyticsAmpSession shared] handleRemoteNotification:[launchOptions
                                                                      objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey]];
     }
+}
+
++ (void)didRegisterForRemoteNotificationsWithDeviceTokenObserver:(NSNotification *)notification
+{
+    [[LocalyticsAmpSession shared] setPushToken:notification.object];
+}
+
++ (void)openURLObserver:(NSNotification *)notification
+{
+    // If the URL is handled by Localytics, we will return yes.
+    [[LocalyticsAmpSession shared] handleURL:notification.object];
 }
 
 - (void)init:(CDVInvokedUrlCommand *)command
 {
 	if (![[command.arguments objectAtIndex:0] isKindOfClass:[NSNull class]])
 	{
-        [[LocalyticsSession sharedLocalyticsSession] LocalyticsSession:[command.arguments objectAtIndex:0]];
+        [[LocalyticsAmpSession sharedLocalyticsSession] LocalyticsSession:[command.arguments objectAtIndex:0]];
 	}
-}
-
-+ (void)didRegisterForRemoteNotificationsWithDeviceTokenObserver:(NSNotification *)notification
-{
-    [[LocalyticsSession shared] setPushToken:notification.object];
 }
 
 - (void)didRecieveRemoteNotificationObserver:(NSNotification *)notification
 {
-    [[LocalyticsSession shared] handleRemoteNotification:notification.object];
+    [[LocalyticsAmpSession shared] handleRemoteNotification:notification.object];
 }
 
 - (void)resume:(CDVInvokedUrlCommand *)command
 {
-    [[LocalyticsSession sharedLocalyticsSession] resume];
+    [[LocalyticsAmpSession sharedLocalyticsSession] resume];
 }
 
 - (void)close:(CDVInvokedUrlCommand *)command
 {
-    [[LocalyticsSession sharedLocalyticsSession] close];
+    [[LocalyticsAmpSession sharedLocalyticsSession] close];
 }
 
 - (void)upload:(CDVInvokedUrlCommand *)command
 {
-    [[LocalyticsSession sharedLocalyticsSession] upload];
+    [[LocalyticsAmpSession sharedLocalyticsSession] upload];
 }
 
 - (void)tagEvent:(CDVInvokedUrlCommand *)command
@@ -83,7 +90,7 @@
 		if (eventName && [eventName isKindOfClass:[NSString class]] && eventName.length > 0 &&
 			customerValueIncrease && [customerValueIncrease isKindOfClass:[NSNumber class]])
 		{
-			[[LocalyticsSession sharedLocalyticsSession] tagEvent:eventName attributes:attributes customerValueIncrease:customerValueIncrease];
+			[[LocalyticsAmpSession sharedLocalyticsSession] tagEvent:eventName attributes:attributes customerValueIncrease:customerValueIncrease];
 		}
 	}
 }
@@ -92,7 +99,7 @@
 {
 	if (![[command.arguments objectAtIndex:0] isKindOfClass:[NSNull class]])
 	{
-		[[LocalyticsSession sharedLocalyticsSession] tagScreen:[command.arguments objectAtIndex:0]];
+		[[LocalyticsAmpSession sharedLocalyticsSession] tagScreen:[command.arguments objectAtIndex:0]];
 	}
 }
 
@@ -109,7 +116,7 @@
 
 	if (dimensionNumber && [dimensionNumber isKindOfClass:[NSNumber class]])
 	{
-		[[LocalyticsSession sharedLocalyticsSession] setCustomDimension:[dimensionNumber intValue] value:dimensionValue];
+		[[LocalyticsAmpSession sharedLocalyticsSession] setCustomDimension:[dimensionNumber intValue] value:dimensionValue];
 	}
 }
 
@@ -124,7 +131,7 @@
 
 	if (name && [name isKindOfClass:[NSString class]] && name.length > 0)
 	{
-		[[LocalyticsSession sharedLocalyticsSession] setValueForIdentifier:name value:value];
+		[[LocalyticsAmpSession sharedLocalyticsSession] setValueForIdentifier:name value:value];
 	}
 }
 
@@ -136,7 +143,7 @@
 		cid = [command.arguments objectAtIndex:0];
 	}
 
-	[[LocalyticsSession sharedLocalyticsSession] setCustomerId:cid];
+	[[LocalyticsAmpSession sharedLocalyticsSession] setCustomerId:cid];
 }
 
 - (void)setCustomerName:(CDVInvokedUrlCommand *)command
@@ -147,7 +154,7 @@
 		name = [command.arguments objectAtIndex:0];
 	}
 
-	[[LocalyticsSession sharedLocalyticsSession] setCustomerName:name];
+	[[LocalyticsAmpSession sharedLocalyticsSession] setCustomerName:name];
 }
 
 - (void)setCustomerEmail:(CDVInvokedUrlCommand *)command
@@ -158,7 +165,7 @@
 		email = [command.arguments objectAtIndex:0];
 	}
 
-	[[LocalyticsSession sharedLocalyticsSession] setCustomerEmail:email];
+	[[LocalyticsAmpSession sharedLocalyticsSession] setCustomerEmail:email];
 }
 
 - (void)setLoggingEnabled:(CDVInvokedUrlCommand *)command
@@ -167,7 +174,7 @@
 
 	if (enabled && [enabled isKindOfClass:[NSNumber class]])
 	{
-		[[LocalyticsSession sharedLocalyticsSession] setLoggingEnabled:[enabled boolValue]];
+		[[LocalyticsAmpSession sharedLocalyticsSession] setLoggingEnabled:[enabled boolValue]];
 	}
 }
 
@@ -177,7 +184,7 @@
 
 	if (enabled && [enabled isKindOfClass:[NSNumber class]])
 	{
-		[[LocalyticsSession sharedLocalyticsSession] setEnableHTTPS:[enabled boolValue]];
+		[[LocalyticsAmpSession sharedLocalyticsSession] setEnableHTTPS:[enabled boolValue]];
 	}
 }
 
@@ -187,7 +194,7 @@
 
 	if (enabled && [enabled isKindOfClass:[NSNumber class]])
 	{
-		[[LocalyticsSession sharedLocalyticsSession] setAdvertisingIdentifierEnabled:[enabled boolValue]];
+		[[LocalyticsAmpSession sharedLocalyticsSession] setAdvertisingIdentifierEnabled:[enabled boolValue]];
 	}
 }
 
@@ -197,7 +204,7 @@
 
 	if (timeout && [timeout isKindOfClass:[NSNumber class]])
 	{
-		[[LocalyticsSession sharedLocalyticsSession] setSessionTimeoutInterval:[timeout floatValue]];
+		[[LocalyticsAmpSession sharedLocalyticsSession] setSessionTimeoutInterval:[timeout floatValue]];
 	}
 }
 
@@ -206,7 +213,7 @@
     if (command.arguments.count == 2) {
         @try {
 
-            return [[LocalyticsSession sharedLocalyticsSession]
+            return [[LocalyticsAmpSession sharedLocalyticsSession]
                     setProfileValue:[command.arguments objectAtIndex:1]
                     forAttribute:[command.arguments objectAtIndex:0]];
 
@@ -218,7 +225,7 @@
 
 - (void)setPushToken:(CDVInvokedUrlCommand *)command
 {
-    [[LocalyticsSession shared] setPushToken:[command.arguments objectAtIndex:0]];
+    [[LocalyticsAmpSession shared] setPushToken:[command.arguments objectAtIndex:0]];
 }
 
 @end
