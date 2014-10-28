@@ -93,9 +93,7 @@ Localytics.prototype.setHttpsEnabled = function (enabled) {
 // Enables or disables IDFA (enabled by default, iOS only)
 // enabled = boolean
 Localytics.prototype.setAdvertisingIdentifierEnabled = function (enabled) {
-	if (device.platform == "iOS") {
-		cordova.exec(null, null, "LocalyticsPlugin", "setAdvertisingIdentifierEnabled", [enabled]);
-	}
+	cordova.exec(null, null, "LocalyticsPlugin", "setAdvertisingIdentifierEnabled", [enabled]);
 }
 
 // Set session resume timeout (15 seconds by default)

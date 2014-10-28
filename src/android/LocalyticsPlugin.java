@@ -174,6 +174,8 @@ public class LocalyticsPlugin extends CordovaPlugin {
             LocalyticsAmpSession.setSessionExpiration(timeout);
             callbackContext.success();
             return true;
+        } else if (action.equals("setAdvertisingIdentifierEnabled")) {
+            return true;
         }
 
         return false;
