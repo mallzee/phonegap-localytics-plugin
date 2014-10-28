@@ -3,13 +3,11 @@ Localytics for PhoneGap/Cordova 3.x
 
 ## Installation
 
-	cordova plugin add https://github.com/localytics/phonegap.git
+	cordova plugin add https://github.com/mallzee/phonegap-localytics-plugin.git --variable APP_ID=[APP ID]
 
-## Integration
+## Integration (iOS Only)
 
-Analytics only integration (Option 1) can be done cross platform in your web app. Analytics + marketing (Option 2) requires platform specific native integration.
-
-### Option 1: Cross platform (analytics only)
+The plugin now fully integrates without the need to modify your AppDelegate.m file. The following JavaScript code is bare minimum to get running. This will integrate the analytics and marketing segments of the SDK.
 
 In your index.html, modify your \<body\> tag:
 
@@ -39,72 +37,6 @@ Also in your index.html, add the following \<script\> block:
             Localytics.upload();
         }
     </script>
-
-### Option 2: Platform specific (analytics + marketing)
-
-#### iOS
-
-At the top of your app delegate, add the following import:
-
-	import "LocalyticsAmpSession.h"
-
-In your app delegate's implementation, add the following code:
-
-	- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-	{
-		// ... existing code ...
-
-		[[LocalyticsAmpSession shared] LocalyticsSession:@"<YOUR_APP_KEY>"];
-	    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeAlert];
-		[LocalyticsAmpSession shared] handleRemoteNotification:launchOptions]];
-
-	    return YES;
-	}
-
-	- (void)applicationDidBecomeActive:(UIApplication *)application
-	{
-		[[LocalyticsAmpSession shared] resume];
-		[[LocalyticsAmpSession shared] upload];
-	}
-
-	- (void)applicationDidEnterBackground:(UIApplication *)application
-	{
-		[[LocalyticsAmpSession shared] close];
-		[[LocalyticsAmpSession shared] upload];
-	}
-
-	- (void)applicationWillEnterForeground:(UIApplication *)application
-	{
-		[[LocalyticsAmpSession shared] resume];
-		[[LocalyticsAmpSession shared] upload];
-	}
-
-	- (void)applicationWillTerminate:(UIApplication *)application
-	{
-		[[LocalyticsAmpSession shared] close];
-		[[LocalyticsAmpSession shared] upload];
-	}
-
-	- (void)applicationWillResignActive:(UIApplication *)application
-	{
-		[[LocalyticsAmpSession shared] close];
-		[[LocalyticsAmpSession shared] upload];
-	}
-
-	- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
-	{
-		[[LocalyticsAmpSession shared] setPushToken:deviceToken];
-	}
-
-	- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
-	{
-		NSLog(@"Failed to register for remote notifications: %@", [error description]);
-	}
-
-	- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-	{
-		[[LocalyticsAmpSession shared] handleRemoteNotification:userInfo];
-	}
 
 #### Android
 
@@ -222,5 +154,11 @@ You can set a global custom dimension on all of your localytics events. This is 
 Localytics now supports profiles. You can start to tag attributes about your customers based on their customer id. See here for more information about profiles. [Localytics Profiles](http://support.localytics.com/IOS#Profile_Attributes)
 
     Localytics.setProfileValue(attribute, value);
+
+### Push Token
+
+Localytics requires the devices push token to enable the push marketing campaigns. With the default integration it forces the user to answer the question of if they want Push Notifications enabled for the app in question. Sometimes, this is not the correct place to ask. This allows you to set the push token on you're own schedule. A good time to ask is after an action that you could update the user on so they understand the value of the notifications from your app.
+
+    Localytics.setPushToken(token);
 
 
