@@ -4,17 +4,53 @@
 //  Copyright 2014 Localytics. All rights reserved.
 //
 
+#import "AppDelegate.h"
 #import "LocalyticsPlugin.h"
 #import "LocalyticsSession.h"
 
 @implementation LocalyticsPlugin
 
++ (void)load
+{
+    NSString *appId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"LocalyticsAppID"];
+
+    if (appId) {
+        [[LocalyticsSession sharedLocalyticsSession] LocalyticsSession:appId];
+    } else {
+        NSLog(@"Localtyics warning: APP ID Missing. Must have 'LocalyticsAppID' key in your info.plist");
+    }
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRegisterForRemoteNotificationsWithDeviceTokenObserver:)name:@"CDVRemoteNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didFinishLaunchingWithOptionsObserver:)name:@"UIApplicationDidFinishLaunchingNotification" object:nil];
+}
+
++ (void)didFinishLaunchingWithOptionsObserver:(NSNotification *)notification
+{
+    NSDictionary *launchOptions = [notification userInfo];
+    if ([[launchOptions allKeys]
+         containsObject:UIApplicationLaunchOptionsRemoteNotificationKey])
+    {
+        [[LocalyticsSession shared] resume];
+        [[LocalyticsSession shared] handleRemoteNotification:[launchOptions
+                                                                     objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey]];
+    }
+}
+
 - (void)init:(CDVInvokedUrlCommand *)command
 {
 	if (![[command.arguments objectAtIndex:0] isKindOfClass:[NSNull class]])
 	{
-		[[LocalyticsSession sharedLocalyticsSession] LocalyticsSession:[command.arguments objectAtIndex:0]];
+        [[LocalyticsSession sharedLocalyticsSession] LocalyticsSession:[command.arguments objectAtIndex:0]];
 	}
+}
+
++ (void)didRegisterForRemoteNotificationsWithDeviceTokenObserver:(NSNotification *)notification
+{
+    [[LocalyticsSession shared] setPushToken:notification.object];
+}
+
+- (void)didRecieveRemoteNotificationObserver:(NSNotification *)notification
+{
+    [[LocalyticsSession shared] handleRemoteNotification:notification.object];
 }
 
 - (void)resume:(CDVInvokedUrlCommand *)command
@@ -165,7 +201,7 @@
 	}
 }
 
--(void)setProfileValue:(CDVInvokedUrlCommand *)command
+- (void)setProfileValue:(CDVInvokedUrlCommand *)command
 {
     if (command.arguments.count == 2) {
         @try {
@@ -178,6 +214,11 @@
             NSLog(@"Localytics profile error %@", error);
         }
     }
+}
+
+- (void)setPushToken:(CDVInvokedUrlCommand *)command
+{
+    [[LocalyticsSession shared] setPushToken:[command.arguments objectAtIndex:0]];
 }
 
 @end

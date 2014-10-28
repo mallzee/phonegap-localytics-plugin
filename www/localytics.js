@@ -109,4 +109,11 @@ Localytics.prototype.setProfileValue = function (attribute, value) {
 	cordova.exec(null, null, "LocalyticsPlugin", "setProfileValue", [attribute, value]);
 }
 
+// Set the push token for this user when it's asked for. Useful when you want to control
+// when the user is asked for push notification access
+// token = string
+Localytics.prototype.setPushToken = function (token) {
+	cordova.exec(null, null, "LocalyticsPlugin", "setPushToken", [token]);
+}
+
 module.exports = new Localytics();

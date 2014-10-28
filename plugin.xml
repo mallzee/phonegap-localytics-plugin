@@ -13,13 +13,29 @@
         <engine name="cordova" version=">=3.0.0" />
     </engines>
 
+    <preference name="APP_KEY" />
 
     <platform name="ios">
 
         <config-file target="config.xml" parent="/*">
             <feature name="LocalyticsPlugin">
-                <param name="ios-package" value="LocalyticsPlugin"/>
+                <param name="ios-package" value="LocalyticsPlugin" onload="true"/>
             </feature>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="LocalyticsAppID">
+            <string>$APP_ID</string>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+          <array>
+            <dict>
+              <key>CFBundleURLSchemes</key>
+              <array>
+                <string>amp$APP_ID</string>
+              </array>
+            </dict>
+          </array>
         </config-file>
 
         <source-file src="src/ios/libLocalyticsAMP_x64.a" framework="true"/>
@@ -38,7 +54,7 @@
 
         <config-file target="config.xml" parent="/*">
             <feature name="LocalyticsPlugin" >
-                <param name="android-package" value="com.localytics.phonegap.LocalyticsPlugin"/>
+                <param name="android-package" value="com.localytics.phonegap.LocalyticsPlugin" onload="true"/>
             </feature>
         </config-file>
 

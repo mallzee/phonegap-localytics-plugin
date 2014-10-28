@@ -24,5 +24,6 @@
 - (void)setAdvertisingIdentifierEnabled:(CDVInvokedUrlCommand *)command;
 - (void)setSessionTimeout:(CDVInvokedUrlCommand *)command;
 - (void)setProfileValue:(CDVInvokedUrlCommand *)command;
+- (void)setPushToken:(CDVInvokedUrlCommand *)command;
 
 @end
