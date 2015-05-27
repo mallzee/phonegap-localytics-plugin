@@ -63,11 +63,6 @@ public class LocalyticsPlugin extends CordovaPlugin {
             callbackContext.success();
             return true;
         }
-        else if (action.equals("upload")) {
-            this.localyticsSession.upload();
-            callbackContext.success();
-            return true;
-        }
         else if (action.equals("tagEvent")) {
             if (args.length() == 3) {
                 String name = args.getString(0);
