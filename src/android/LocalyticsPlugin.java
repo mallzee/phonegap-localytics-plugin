@@ -18,8 +18,9 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import com.localytics.android.LocalyticsAmpSession;
+import com.localytics.android.*;
 
+import android.content.pm.PackageManager.NameNotFoundException;
 /**
  * This class echoes a string called from JavaScript.
  */
@@ -42,21 +43,42 @@ public class LocalyticsPlugin extends CordovaPlugin {
             String key = args.getString(0);
             if (key != null && key.length() > 0) {
                 this.localyticsSession = new LocalyticsAmpSession(cordova.getActivity().getApplicationContext(), key);
-                callbackContext.success();
+                try {
+                  android.content.pm.ApplicationInfo ai = cordova.getActivity().getApplicationContext().getPackageManager()
+                                               .getApplicationInfo(cordova.getActivity().getApplicationContext().getPackageName(),android.content.pm.PackageManager.GET_META_DATA);
+                  String gcmKey = ai.metaData.get("GCM_KEY").toString();
+
+                  this.localyticsSession.registerPush(gcmKey);
+                  this.localyticsSession.open();
+                  this.localyticsSession.handlePushReceived(cordova.getActivity().getIntent());
+                  this.localyticsSession.upload();
+
+                  callbackContext.success();
+                } catch (NameNotFoundException ex) {
+                  callbackContext.error("Couldn't find GCM_KEY");
+                }
             } else {
                 callbackContext.error("Expected non-empty key argument.");
             }
             return true;
         }
         else if (action.equals("resume")) {
-            this.localyticsSession.open();
-            callbackContext.success();
-            return true;
+          this.localyticsSession.open();
+          this.localyticsSession.handlePushReceived(cordova.getActivity().getIntent());
+          this.localyticsSession.upload();
+          callbackContext.success();
+          return true;
         }
         else if (action.equals("close")) {
             this.localyticsSession.close();
             callbackContext.success();
             return true;
+        }
+        else if (action.equals("pause")) {
+          this.localyticsSession.close();
+          this.localyticsSession.upload();
+          callbackContext.success();
+          return true;
         }
         else if (action.equals("upload")) {
             this.localyticsSession.upload();
